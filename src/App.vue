@@ -4,10 +4,12 @@ import { ref, onMounted } from 'vue'
 const pgrData = ref(null)
 const loading = ref(true)
 const errorMsg = ref(null)
-
+const isEmbed = ref(false)
 onMounted(async () => {
   const urlParams = new URLSearchParams(window.location.search);
   const currentUid = urlParams.get('uid') || '12584504';
+  
+  isEmbed.value = urlParams.get('embed') === 'true';
 
   try {
     const response = await fetch(`/api/pgr?uid=${currentUid}`)
@@ -28,9 +30,9 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-[#020617] flex flex-col items-center justify-center p-4 font-sans relative overflow-hidden text-white">
+  <div :class="[isEmbed ? 'bg-transparent' : 'bg-[#020617]', 'min-h-screen flex flex-col items-center justify-center p-4 font-sans relative overflow-hidden text-white']">
     
-    <div class="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+    <div v-if="!isEmbed" class="fixed inset-0 z-0 pointer-events-none overflow-hidden">
       <div class="aurora-shape aurora-1 absolute rounded-full mix-blend-screen bg-[#b91c1c] blur-[100px] opacity-50"></div>
       <div class="aurora-shape aurora-2 absolute rounded-full mix-blend-screen bg-[#e11d48] blur-[100px] opacity-40"></div>
       <div class="aurora-shape aurora-3 absolute rounded-full mix-blend-screen bg-[#7f1d1d] blur-[120px] opacity-30"></div>
@@ -82,6 +84,7 @@ onMounted(async () => {
     </a>
 
     <a 
+      v-if="!isEmbed"
       href="https://github.com/vermilion10/pgr-widget" 
       target="_blank" 
       class="mt-8 z-10 flex items-center gap-2 text-[0.85rem] text-slate-400 font-medium transition-colors hover:text-[#fb7185] bg-white/[0.02] border border-white/10 px-4 py-2 rounded-full hover:bg-white/[0.05]"
