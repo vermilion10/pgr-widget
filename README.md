@@ -9,7 +9,8 @@ A dynamic, glassmorphism-styled profile card widget for Punishing: Gray Raven pl
 
 ## How to Use
 Just visit the live demo and append your UID:
-`https://pgr-widget.pages.dev/?uid=YOUR_UID`
+`https://pgr-widget.pages.dev/?uid=YOUR_UID` <br>
+To embed just the widget into your website, use `https://pgr-widget.pages.dev/?uid=YOUR_UID&embed=true`
 
 
 ## Local Development
