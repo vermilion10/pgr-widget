@@ -1,6 +1,7 @@
 # PGR Player Card Widget
 
 A dynamic, glassmorphism-styled profile card widget for Punishing: Gray Raven players.
+> Currently available only for Asia-Pacific servers 
 
 ## Features
 * **Dynamic Data:** Fetches real-time player stats, avatar, frame, and signature.
