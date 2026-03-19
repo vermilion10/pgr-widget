@@ -20,12 +20,23 @@ onMounted(async () => {
   isEmbed.value = urlParams.get('embed') === 'true';
 
   if (isEmbed.value) {
+    document.documentElement.style.width = '100%';
+    document.documentElement.style.height = '100%';
+    document.body.style.width = '100%';
+    document.body.style.height = '100%';
+    
     document.documentElement.style.overflow = 'hidden';
     document.documentElement.style.touchAction = 'pan-y';
     document.body.style.overflow = 'hidden';
     document.body.style.touchAction = 'pan-y';
     document.body.style.margin = '0';
     document.body.style.padding = '0';
+
+    const appDiv = document.getElementById('app');
+    if (appDiv) {
+      appDiv.style.width = '100%';
+      appDiv.style.height = '100%';
+    }
 
     const resizeWidget = () => {
       const wrapper = document.getElementById('widget-wrapper');
