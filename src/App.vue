@@ -81,7 +81,7 @@ onMounted(async () => {
     <div class="scale-wrapper" id="widget-wrapper">
       
       <a v-if="pgrData" :href="`https://huaxu.app/ap/players/${pgrData.id}/characters`" target="_blank"
-        class="pgr-card block relative z-10 w-[420px] h-[280px] box-border transition-all duration-400 ease-[cubic-bezier(0.25,0.8,0.25,1)] bg-[#020617]/90 backdrop-blur-[16px] border border-white/10 rounded-[20px] p-6 shadow-[0_4px_30px_rgba(0,0,0,0.2)] group cursor-pointer no-underline text-white flex flex-col justify-center"
+        class="pgr-card block relative z-10 w-[420px] h-[280px] box-border transition-all duration-400 ease-[cubic-bezier(0.25,0.8,0.25,1)] bg-white/[0.03] backdrop-blur-[16px] border border-white/10 rounded-[20px] p-6 shadow-[0_4px_30px_rgba(0,0,0,0.2)] group cursor-pointer no-underline text-white flex flex-col justify-center"
       >
         <svg class="absolute top-5 right-5 w-4 h-4 text-slate-400 transition-all duration-300 group-hover:text-[#fb7185] group-hover:translate-x-[2px] group-hover:-translate-y-[2px]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
