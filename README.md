@@ -1,18 +1,19 @@
 # PGR Player Card Widget
 
 A dynamic, glassmorphism-styled profile card widget for Punishing: Gray Raven players.
-> Currently available only for Asia-Pacific servers 
 
 ## Features
 * **Dynamic Data:** Fetches real-time player stats, avatar, frame, and signature.
-* **Custom UID:** Add `?uid=YOUR_UID` to the URL to generate a card for any public player.
+* **Custom UID:** Add `?server=SERVER_CODE&uid=YOUR_UID` to the URL to generate a card for any public player.
 * **Glassmorphism UI:** Modern, lightweight, and responsive design.
 
 ## How to Use
 Just visit the live demo and append your UID:
-`https://pgr-widget.pages.dev/?uid=YOUR_UID` <br>
-To embed just the widget into your website, use `https://pgr-widget.pages.dev/?uid=YOUR_UID&embed=true`
+https://pgr-widget.pages.dev/?server=SERVER_CODE&uid=YOUR_UID <br>
+To embed just the widget into your website, use `https://pgr-widget.pages.dev/?server=SERVER_CODE&uid=YOUR_UID&embed=true`
 
+> **SERVER_CODE**:
+ap (asia-pacific), na (north-america), eu (europe), cn (china), tw (taiwan), kr (korea), jp (japan)
 
 ## Local Development
 1. Clone this repository.
