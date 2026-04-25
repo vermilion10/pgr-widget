@@ -6,16 +6,21 @@ const loading = ref(true)
 const errorMsg = ref(null)
 const isEmbed = ref(false)
 const inputUid = ref(''); 
+const inputServer = ref('ap');
+const currentServer = ref('ap');
+const servers = ['ap', 'eu', 'na', 'kr', 'jp', 'tw', 'cn'];
 
 const goToUid = () => {
   if (inputUid.value.trim()) {
-    window.location.href = `/?uid=${inputUid.value.trim()}`;
+    window.location.href = `/?server=${inputServer.value}&uid=${inputUid.value.trim()}`;
   }
 }
 
 onMounted(async () => {
   const urlParams = new URLSearchParams(window.location.search);
   const currentUid = urlParams.get('uid') || '12584504';
+  currentServer.value = urlParams.get('server') || 'ap';
+  inputServer.value = currentServer.value;
   
   isEmbed.value = urlParams.get('embed') === 'true';
 
@@ -51,7 +56,7 @@ onMounted(async () => {
   }
 
   try {
-    const response = await fetch(`/api/pgr?uid=${currentUid}`)
+    const response = await fetch(`/api/pgr?server=${currentServer.value}&uid=${currentUid}`)
     const data = await response.json()
     
     if (data.error) throw new Error(data.error)
@@ -69,7 +74,7 @@ onMounted(async () => {
 
   } catch (error) {
     console.error("Gagal mengambil data", error)
-    errorMsg.value = "Data pemain tidak ditemukan atau disetel Private."
+    errorMsg.value = "Data pemain tidak ditemukan."
   } finally {
     loading.value = false
   }
@@ -80,7 +85,7 @@ onMounted(async () => {
   <div v-if="isEmbed" class="bg-transparent m-0 p-0 overflow-hidden text-white font-sans w-full h-full block relative">
     <div class="scale-wrapper" id="widget-wrapper">
       
-      <a v-if="pgrData" :href="`https://huaxu.app/ap/players/${pgrData.id}/characters`" target="_blank"
+      <a v-if="pgrData" :href="`https://huaxu.app/${currentServer}/players/${pgrData.id}/characters`" target="_blank"
         class="pgr-card block relative z-10 w-[420px] h-[280px] box-border transition-all duration-400 ease-[cubic-bezier(0.25,0.8,0.25,1)] bg-white/[0.03] backdrop-blur-[16px] border border-white/10 rounded-[20px] p-6 shadow-[0_4px_30px_rgba(0,0,0,0.2)] group cursor-pointer no-underline text-white flex flex-col justify-center"
       >
         <svg class="absolute top-5 right-5 w-4 h-4 text-slate-400 transition-all duration-300 group-hover:text-[#fb7185] group-hover:translate-x-[2px] group-hover:-translate-y-[2px]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -128,7 +133,7 @@ onMounted(async () => {
     
     <a 
       v-else-if="pgrData" 
-      :href="`https://huaxu.app/ap/players/${pgrData.id}/characters`" 
+      :href="`https://huaxu.app/${currentServer}/players/${pgrData.id}/characters`" 
       target="_blank"
       class="pgr-card block relative z-10 w-full max-w-[420px] transition-all duration-400 ease-[cubic-bezier(0.25,0.8,0.25,1)] bg-white/[0.03] backdrop-blur-[16px] border border-white/10 rounded-[20px] p-7 shadow-[0_4px_30px_rgba(0,0,0,0.2)] group cursor-pointer no-underline text-white"
     >
@@ -160,8 +165,21 @@ onMounted(async () => {
       </div>
     </a>
 
-    <div class="mt-8 z-10 flex flex-col items-center gap-3">
+    <div class="mt-8 z-10 flex flex-col items-center gap-4">
       <p class="text-[0.85rem] text-slate-400 font-medium">Create that with your own UID:</p>
+      
+      <div class="flex bg-white/[0.03] border border-white/10 rounded-full p-1 backdrop-blur-md">
+        <button 
+          v-for="srv in servers" 
+          :key="srv"
+          @click="inputServer = srv"
+          type="button"
+          :class="['px-3 py-1.5 rounded-full text-xs font-semibold transition-all duration-300 uppercase cursor-pointer', inputServer === srv ? 'bg-[#fb7185] text-white shadow-md' : 'text-slate-400 hover:text-white hover:bg-white/5']"
+        >
+          {{ srv }}
+        </button>
+      </div>
+
       <form @submit.prevent="goToUid" class="flex gap-2">
         <input v-model="inputUid" type="text" placeholder="Input UID..." class="bg-white/[0.02] border border-white/10 rounded-full px-4 py-2 text-sm text-white focus:outline-none focus:border-[#fb7185]/50 transition-colors backdrop-blur-md placeholder:text-slate-600 w-40 text-center">
         <button type="submit" class="bg-[#fb7185]/10 text-[#fb7185] border border-[#fb7185]/20 hover:bg-[#fb7185]/20 px-5 py-2 rounded-full text-sm font-semibold transition-all backdrop-blur-md cursor-pointer">
