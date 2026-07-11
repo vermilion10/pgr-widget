@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, nextTick } from 'vue'
+import { ref, computed, onMounted, nextTick } from 'vue'
 
 const pgrData = ref(null)
 const loading = ref(true)
@@ -9,10 +9,49 @@ const inputUid = ref('');
 const inputServer = ref('ap');
 const currentServer = ref('ap');
 const servers = ['ap', 'eu', 'na', 'kr', 'jp', 'tw', 'cn'];
+const copiedType = ref(null)
 
 const goToUid = () => {
   if (inputUid.value.trim()) {
     window.location.href = `/?server=${inputServer.value}&uid=${inputUid.value.trim()}`;
+  }
+}
+
+// SVG embed code generation
+const baseUrl = computed(() => {
+  if (typeof window !== 'undefined') return window.location.origin
+  return 'https://pgr-widget.pages.dev'
+})
+
+const svgUrl = computed(() => {
+  if (!pgrData.value) return ''
+  return `${baseUrl.value}/api/pgr-svg?uid=${pgrData.value.id}&server=${currentServer.value}`
+})
+
+const imgCode = computed(() => {
+  if (!svgUrl.value) return ''
+  return `<img src="${svgUrl.value}" alt="PGR Profile" width="420" />`
+})
+
+const markdownCode = computed(() => {
+  if (!svgUrl.value) return ''
+  return `[![PGR Profile](${svgUrl.value})](https://huaxu.app/${currentServer.value}/players/${pgrData.value.id}/characters)`
+})
+
+async function copyToClipboard(text, type) {
+  try {
+    await navigator.clipboard.writeText(text)
+    copiedType.value = type
+    setTimeout(() => { copiedType.value = null }, 2000)
+  } catch {
+    const el = document.createElement('textarea')
+    el.value = text
+    document.body.appendChild(el)
+    el.select()
+    document.execCommand('copy')
+    document.body.removeChild(el)
+    copiedType.value = type
+    setTimeout(() => { copiedType.value = null }, 2000)
   }
 }
 
@@ -186,6 +225,66 @@ onMounted(async () => {
           Search
         </button>
       </form>
+    </div>
+
+    <!-- SVG Embed Section -->
+    <div v-if="pgrData" class="mt-10 z-10 w-full max-w-[500px] flex flex-col items-center gap-5">
+      <div class="w-full border-t border-white/10 pt-6">
+        <h3 class="text-center text-sm font-bold text-slate-300 uppercase tracking-widest mb-4">Embed as SVG Image</h3>
+        
+        <!-- SVG Preview -->
+        <div class="flex justify-center mb-5 bg-white/[0.02] border border-white/10 rounded-2xl p-4 backdrop-blur-md">
+          <img :src="svgUrl" alt="PGR SVG Widget Preview" class="max-w-full h-auto rounded-lg" />
+        </div>
+
+        <!-- Code snippets -->
+        <div class="flex flex-col gap-3">
+          <!-- HTML img tag -->
+          <div class="bg-white/[0.02] border border-white/10 rounded-xl p-3 backdrop-blur-md">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-[10px] uppercase tracking-widest text-slate-500 font-bold">HTML</span>
+              <button 
+                @click="copyToClipboard(imgCode, 'img')"
+                class="text-[10px] uppercase tracking-wider font-bold px-3 py-1 rounded-full transition-all cursor-pointer"
+                :class="copiedType === 'img' ? 'bg-green-500/20 text-green-400 border border-green-500/30' : 'bg-white/5 text-slate-400 border border-white/10 hover:text-[#fb7185] hover:border-[#fb7185]/30'"
+              >
+                {{ copiedType === 'img' ? '✓ Copied!' : 'Copy' }}
+              </button>
+            </div>
+            <code class="text-[11px] text-slate-400 font-mono break-all leading-relaxed block">{{ imgCode }}</code>
+          </div>
+
+          <!-- Markdown -->
+          <div class="bg-white/[0.02] border border-white/10 rounded-xl p-3 backdrop-blur-md">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Markdown</span>
+              <button 
+                @click="copyToClipboard(markdownCode, 'md')"
+                class="text-[10px] uppercase tracking-wider font-bold px-3 py-1 rounded-full transition-all cursor-pointer"
+                :class="copiedType === 'md' ? 'bg-green-500/20 text-green-400 border border-green-500/30' : 'bg-white/5 text-slate-400 border border-white/10 hover:text-[#fb7185] hover:border-[#fb7185]/30'"
+              >
+                {{ copiedType === 'md' ? '✓ Copied!' : 'Copy' }}
+              </button>
+            </div>
+            <code class="text-[11px] text-slate-400 font-mono break-all leading-relaxed block">{{ markdownCode }}</code>
+          </div>
+
+          <!-- Direct URL -->
+          <div class="bg-white/[0.02] border border-white/10 rounded-xl p-3 backdrop-blur-md">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Direct SVG URL</span>
+              <button 
+                @click="copyToClipboard(svgUrl, 'url')"
+                class="text-[10px] uppercase tracking-wider font-bold px-3 py-1 rounded-full transition-all cursor-pointer"
+                :class="copiedType === 'url' ? 'bg-green-500/20 text-green-400 border border-green-500/30' : 'bg-white/5 text-slate-400 border border-white/10 hover:text-[#fb7185] hover:border-[#fb7185]/30'"
+              >
+                {{ copiedType === 'url' ? '✓ Copied!' : 'Copy' }}
+              </button>
+            </div>
+            <code class="text-[11px] text-slate-400 font-mono break-all leading-relaxed block">{{ svgUrl }}</code>
+          </div>
+        </div>
+      </div>
     </div>
 
     <a href="https://github.com/vermilion10/pgr-widget" target="_blank" class="mt-6 z-10 flex items-center gap-2 text-[0.85rem] text-slate-400 font-medium transition-colors hover:text-[#fb7185] bg-white/[0.02] border border-white/10 px-4 py-2 rounded-full hover:bg-white/[0.05]">
