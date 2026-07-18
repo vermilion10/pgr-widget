@@ -53,6 +53,7 @@ async function toBase64(url) {
 }
 
 function buildSvg(player, chars, accent) {
+  const { ownedCount, totalCount } = player.collection || {};
   const A = `#${accent}`;        // rose accent
   const A2 = `#4d9fff`;          // electric blue accent
   const BG = '#0d1117';          // GitHub dark base
@@ -109,8 +110,13 @@ function buildSvg(player, chars, accent) {
     avatarSvg += `<image href="${player.frameB64}" x="${avatarCX - fs / 2}" y="${avatarY - fs / 2}" width="${fs}" height="${fs}" preserveAspectRatio="xMidYMid meet"/>`;
   }
 
-  // --- Player info ---
-  const nameY = 42;
+  // --- Player info (vertically centered) ---
+  // Calculate block height to center it in the card area (between top padding and footer)
+  // Layout: Name(17) + gap(4) + UID(11) + gap(7) + separator + gap(8) + LevelChip(16) [+ gap(17) + Bio(11)]
+  const infoBlockH = player.sign ? 68 : 50;
+  const cardUsableTop = 22;
+  const cardUsableBottom = CARD_H - 28;
+  const nameY = cardUsableTop + (cardUsableBottom - cardUsableTop - infoBlockH) / 2 + 14;
   const nameText = esc(trunc(player.name, 20));
 
   let infoSvg = `
@@ -170,6 +176,13 @@ function buildSvg(player, chars, accent) {
       // Subtle ring
       charSvg += `<circle cx="${cx}" cy="${cy}" r="${charR}" fill="none" stroke="${BORDER}" stroke-width="1.5"/>`;
     });
+
+    // Collection rate below showcase
+    if (ownedCount != null && totalCount) {
+      const pct = Math.round((ownedCount / totalCount) * 100);
+      charSvg += `<text x="${startX + totalW / 2 - charR}" y="${charCY + charR + 14}" font-family="${FONT}"
+        font-size="8" font-weight="600" fill="${MUTED}" text-anchor="middle" opacity="0.7">${ownedCount}/${totalCount} Owned (${pct}%)</text>`;
+    }
   }
 
   // --- Footer ---
@@ -279,6 +292,10 @@ export async function onRequest(context) {
       }),
     ]);
 
+    const allChars = json.data.characters || [];
+    const ownedCount = allChars.filter((c) => c.acquired).length;
+    const totalCount = allChars.length;
+
     const player = {
       id: p.id,
       name: p.name,
@@ -288,6 +305,7 @@ export async function onRequest(context) {
       frameB64,
       guild: p.guildName?.trim() || 'No Guild',
       started: json.data.startDate ? json.data.startDate.split('T')[0] : 'Unknown',
+      collection: { ownedCount, totalCount },
     };
 
     const svg = buildSvg(player, charResults, accent);
